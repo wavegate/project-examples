@@ -1,0 +1,157 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "sqlite"
+    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+    // Further reading:
+    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+    url      = env("DATABASE_URL")
+}
+
+model Post {
+    id        Int      @id @default(autoincrement())
+    name      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    createdBy   User   @relation(fields: [createdById], references: [id])
+    createdById String
+
+    @@index([name])
+}
+
+// Necessary for Next auth
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? // @db.Text
+    access_token      String? // @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? // @db.Text
+    session_state     String?
+    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+    id            String    @id @default(cuid())
+    name          String?
+    email         String?   @unique
+    emailVerified DateTime?
+    image         String?
+    accounts      Account[]
+    sessions      Session[]
+    posts         Post[]
+    reportedBugs  Bug[]     @relation("BugReporter")
+    assignedBugs  Bug[]     @relation("BugAssignee")
+    comments      Comment[]
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+model Bug {
+    id               Int             @id @default(autoincrement())
+    title            String
+    description      String?
+    stepsToReproduce String?
+    severity         Severity?       @relation(fields: [severityId], references: [id])
+    priority         Priority?       @relation(fields: [priorityId], references: [id])
+    status           Status?         @relation(fields: [statusId], references: [id])
+    environment      String?
+    reporterId       String
+    assigneeId       String?
+    createdAt        DateTime        @default(now())
+    updatedAt        DateTime        @updatedAt
+    attachments      Attachment[]
+    tags             Tag[]
+    isRegression     Boolean         @default(false)
+    dependencies     BugDependency[] @relation("BugDependencies")
+    dependentBugs    BugDependency[] @relation("DependentBugs")
+    estimatedTime    Int? // Time in minutes
+    actualTime       Int? // Time in minutes
+    comments         Comment[]
+
+    reporter   User  @relation("BugReporter", fields: [reporterId], references: [id])
+    assignee   User? @relation("BugAssignee", fields: [assigneeId], references: [id])
+    severityId Int?
+    priorityId Int?
+    statusId   Int?
+}
+
+model Attachment {
+    id    Int    @id @default(autoincrement())
+    bugId Int
+    url   String
+
+    bug Bug @relation(fields: [bugId], references: [id])
+}
+
+model Tag {
+    id   Int    @id @default(autoincrement())
+    name String
+    bugs Bug[]
+}
+
+model BugDependency {
+    id          Int @id @default(autoincrement())
+    bugId       Int
+    dependsOnId Int
+
+    bug       Bug @relation("BugDependencies", fields: [bugId], references: [id])
+    dependsOn Bug @relation("DependentBugs", fields: [dependsOnId], references: [id])
+}
+
+model Severity {
+    id   Int    @id @default(autoincrement())
+    name String @unique
+    bugs Bug[]
+}
+
+model Priority {
+    id   Int    @id @default(autoincrement())
+    name String @unique
+    bugs Bug[]
+}
+
+model Status {
+    id   Int    @id @default(autoincrement())
+    name String @unique
+    bugs Bug[]
+}
+
+model Comment {
+    id        Int      @id @default(autoincrement())
+    content   String
+    authorId  String
+    bugId     Int
+    createdAt DateTime @default(now())
+
+    author User @relation(fields: [authorId], references: [id])
+    bug    Bug  @relation(fields: [bugId], references: [id])
+}
