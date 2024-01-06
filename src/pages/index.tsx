@@ -25,24 +25,9 @@ function AuthShowcase() {
   const createPost = api.post.create.useMutation();
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl">
-        {sessionData && (
-          <button
-            onClick={
-              sessionData
-                ? () => createPost.mutate({ name: "Sally" })
-                : () => {
-                    return;
-                  }
-            }
-          >
-            Create post
-          </button>
-        )}
-        {JSON.stringify(latestMessage)}
-        {secretMessage && <span> - {secretMessage}</span>}
-      </p>
-    </div>
+    <>
+      <div>Hello!</div>
+      <div>This is the home page of my prototype web applications.</div>
+    </>
   );
 }

@@ -56,7 +56,6 @@ CREATE TABLE "Bug" (
     "title" TEXT NOT NULL,
     "description" TEXT,
     "stepsToReproduce" TEXT,
-    "environment" TEXT,
     "reporterId" TEXT NOT NULL,
     "assigneeId" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -67,9 +66,11 @@ CREATE TABLE "Bug" (
     "severityId" INTEGER,
     "priorityId" INTEGER,
     "statusId" INTEGER,
+    "environmentId" INTEGER,
     CONSTRAINT "Bug_severityId_fkey" FOREIGN KEY ("severityId") REFERENCES "Severity" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "Bug_priorityId_fkey" FOREIGN KEY ("priorityId") REFERENCES "Priority" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "Bug_statusId_fkey" FOREIGN KEY ("statusId") REFERENCES "Status" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Bug_environmentId_fkey" FOREIGN KEY ("environmentId") REFERENCES "Environment" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "Bug_reporterId_fkey" FOREIGN KEY ("reporterId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "Bug_assigneeId_fkey" FOREIGN KEY ("assigneeId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
@@ -84,6 +85,12 @@ CREATE TABLE "Attachment" (
 
 -- CreateTable
 CREATE TABLE "Tag" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "Environment" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL
 );

@@ -76,32 +76,50 @@ model VerificationToken {
 }
 
 model Bug {
-    id               Int             @id @default(autoincrement())
+    id               Int          @id @default(autoincrement())
     title            String
     description      String?
     stepsToReproduce String?
-    severity         Severity?       @relation(fields: [severityId], references: [id])
-    priority         Priority?       @relation(fields: [priorityId], references: [id])
-    status           Status?         @relation(fields: [statusId], references: [id])
-    environment      String?
+    severity         Severity?    @relation(fields: [severityId], references: [id])
+    priority         Priority?    @relation(fields: [priorityId], references: [id])
+    status           Status?      @relation(fields: [statusId], references: [id])
+    environment      Environment? @relation(fields: [environmentId], references: [id])
     reporterId       String
     assigneeId       String?
-    createdAt        DateTime        @default(now())
-    updatedAt        DateTime        @updatedAt
+    createdAt        DateTime     @default(now())
+    updatedAt        DateTime     @updatedAt
     attachments      Attachment[]
     tags             Tag[]
-    isRegression     Boolean         @default(false)
-    dependencies     BugDependency[] @relation("BugDependencies")
-    dependentBugs    BugDependency[] @relation("DependentBugs")
-    estimatedTime    Int? // Time in minutes
-    actualTime       Int? // Time in minutes
-    comments         Comment[]
+    isRegression     Boolean      @default(false)
+    dependencies     Bug[]        @relation("BugToBug")
+    dependentOn      Bug[]        @relation("BugToBug")
 
-    reporter   User  @relation("BugReporter", fields: [reporterId], references: [id])
-    assignee   User? @relation("BugAssignee", fields: [assigneeId], references: [id])
-    severityId Int?
-    priorityId Int?
-    statusId   Int?
+    comments Comment[]
+
+    reporter        User        @relation("BugReporter", fields: [reporterId], references: [id])
+    assignee        User?       @relation("BugAssignee", fields: [assigneeId], references: [id])
+    severityId      Int?
+    priorityId      Int?
+    statusId        Int?
+    environmentId   Int?
+    estimatedTimeId Int?        @unique
+    estimatedTime   TimeLength? @relation("BugEstimatedTime", fields: [estimatedTimeId], references: [id])
+    actualTimeId    Int?        @unique
+    actualTime      TimeLength? @relation("BugActualTime", fields: [actualTimeId], references: [id])
+}
+
+model TimeLength {
+    id      Int  @id @default(autoincrement())
+    weeks   Int?
+    days    Int?
+    hours   Int?
+    minutes Int?
+
+    // Relation back to Bug model for estimated time
+    estimatedBug Bug? @relation("BugEstimatedTime")
+
+    // Relation back to Bug model for actual time
+    actualBug Bug? @relation("BugActualTime")
 }
 
 model Attachment {
@@ -118,13 +136,10 @@ model Tag {
     bugs Bug[]
 }
 
-model BugDependency {
-    id          Int @id @default(autoincrement())
-    bugId       Int
-    dependsOnId Int
-
-    bug       Bug @relation("BugDependencies", fields: [bugId], references: [id])
-    dependsOn Bug @relation("DependentBugs", fields: [dependsOnId], references: [id])
+model Environment {
+    id   Int    @id @default(autoincrement())
+    name String
+    bugs Bug[]
 }
 
 model Severity {
