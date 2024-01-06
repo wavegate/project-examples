@@ -6,19 +6,8 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 type BugInput = RouterInputs["bug"]["update"];
-interface TimeStructure {
-  weeks: number;
-  days: number;
-  hours: number;
-  minutes: number;
-}
 
 type BugOutput = RouterOutputs["bug"]["getAll"];
-
-type BugInputWithStructuredTime = Omit<BugInput, "estimatedTime"> & {
-  estimatedTime: TimeStructure;
-  actualTime: TimeStructure;
-};
 
 interface TimeInputProps {
   label: string;
@@ -99,7 +88,7 @@ const CreateBug = () => {
     editBug.mutate({ ...values, id: Number(id) });
   };
 
-  const [form] = Form.useForm<BugInputWithStructuredTime>();
+  const [form] = Form.useForm<BugInput>();
 
   useEffect(() => {
     if (bug) {

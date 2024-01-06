@@ -6,6 +6,7 @@ import { priorityRouter } from "@/server/api/routers/priority";
 import { statusRouter } from "@/server/api/routers/status";
 import { userRouter } from "@/server/api/routers/user";
 import { environmentRouter } from "@/server/api/routers/environment";
+import { commentRouter } from "@/server/api/routers/comment";
 
 /**
  * This is the primary router for your server.
@@ -20,6 +21,7 @@ export const appRouter = createTRPCRouter({
   status: statusRouter,
   user: userRouter,
   environment: environmentRouter,
+  comment: commentRouter,
 });
 
 // export type definition of API

@@ -166,7 +166,10 @@ model Comment {
     authorId  String
     bugId     Int
     createdAt DateTime @default(now())
+    parentId  Int?
 
-    author User @relation(fields: [authorId], references: [id])
-    bug    Bug  @relation(fields: [bugId], references: [id])
+    author  User      @relation(fields: [authorId], references: [id])
+    bug     Bug       @relation(fields: [bugId], references: [id])
+    parent  Comment?  @relation("CommentThread", fields: [parentId], references: [id])
+    replies Comment[] @relation("CommentThread")
 }

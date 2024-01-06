@@ -27,7 +27,10 @@ function AuthShowcase() {
   return (
     <>
       <div>Hello!</div>
-      <div>This is the home page of my prototype web applications.</div>
+      <div>
+        This are some examples using T3 (Next, TRPC, NextAuth, Prisma, Tailwind)
+        and Ant Design.
+      </div>
     </>
   );
 }
