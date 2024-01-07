@@ -17,10 +17,14 @@ const CustomComment = ({ comment, allComments }: CustomCommentProps) => {
   const replies = allComments.filter((c) => c.parentId === comment.id);
 
   return (
-    <Card>
+    <>
       <List.Item.Meta
-        avatar={<Avatar>{comment.authorId.charAt(0).toUpperCase()}</Avatar>}
-        title={comment.authorId}
+        avatar={
+          <Avatar src={comment.author.image}>
+            {comment.authorId.charAt(0).toUpperCase()}
+          </Avatar>
+        }
+        title={comment.author.name}
         description={<Paragraph>{comment.content}</Paragraph>}
       />
       {dayjs(comment.createdAt).format("MM/DD/YYYY")}
@@ -35,7 +39,7 @@ const CustomComment = ({ comment, allComments }: CustomCommentProps) => {
           )}
         />
       )}
-    </Card>
+    </>
   );
 };
 

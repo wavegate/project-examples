@@ -244,7 +244,11 @@ export const bugRouter = createTRPCRouter({
           estimatedTime: true,
           actualTime: true,
           dependencies: true,
-          comments: true,
+          comments: {
+            include: {
+              author: true,
+            },
+          },
         },
       });
     }),
